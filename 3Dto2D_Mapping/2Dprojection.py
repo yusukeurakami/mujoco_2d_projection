@@ -1,11 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
+# import gym
+# from gym.envs.robotics.rotations import mat2euler, mat2quat, quat2euler, euler2quat
 
 def global2label(obj_pos, cam_pos, cam_ori, fov=60):
     """
-    :param obj_pos: 3D coordinates of the joint in nparray [m]
-    :param cam_pos: 3D coordinates of the camera in nparray [m]
-    :param cam_ori: camera 3D rotation (Rotation order of x->y->z) in nparray [rad]
+    :param obj_pos: 3D coordinates of the joint from MuJoCo in nparray [m]
+    :param cam_pos: 3D coordinates of the camera from MuJoCo in nparray [m]
+    :param cam_ori: camera 3D rotation (Rotation order of x->y->z) from MuJoCo in nparray [rad]
     :param fov: field of view in integer [degree]
     :return: Heatmap of the object in the 2D pixel space.
     """
@@ -71,10 +73,16 @@ def gkern(h, w, center, s=4):
     return np.exp(-1 * ((x - x0) ** 2 + (y - y0) ** 2) / s**2)
 
 if __name__ == "__main__":
-    obj_pos = np.array([0.2, 0.25, 1.03])
+    # Use self.sim.data.get_geom_xpos("object") to get the object pos (mujoco-py env)
+    obj_pos = np.array([0.2, 0.25, 1.0])  
+    # Use env.sim.data.get_camera_xpos('camera') to get the camera pos (mujoco-py env)
     cam_pos = np.array([0.7, 0, 1.5])
-    cam_ori = np.array([0,1.1,1.57])
-    fov = 60
+    # Use gym.envs.robotics.rotations.mat2euler(env.sim.data.get_camera_xmat('camera1')) to get the camera orientation in euler form. (mujoco-py + gym)       
+    cam_ori = np.array([0.2, 1.2, 1.57])
+
+
+
+    fov = 90
     
     label = global2label(obj_pos, cam_pos, cam_ori, fov)
     plt.imshow(label)

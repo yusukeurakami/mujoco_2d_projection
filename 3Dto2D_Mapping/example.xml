@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="example">
+	<compiler angle="radian"/>
+    <asset>
+		<texture builtin="gradient" height="512" name="texplane" rgb1="0.32 0.12 0.23" rgb2="0.19 0.11 0.16" type="2d" width="512"/>
+		<material name="Floor" texture="texplane"/>
+	</asset>
+	<worldbody>
+        <light diffuse="1.0 1.0 1.0" dir="0.48 0.39 -0.34" directional="true" pos="4.82 3.75 5.12"/>
+		<light diffuse="1.0 0.9 0.9" dir="-0.18 -0.03 -0.48" directional="true" pos="1.92 -0.89 4.69"/>
+		<light diffuse="1.0 1.0 1.0" dir="-0.12 -0.02 -0.39" directional="true" pos="0.89 -1.65 3.38"/>
+		<geom material="Floor" name="floor" pos="0 0 -0.05" size="5.0 5.0 0.05" type="plane"/>
+
+        <geom name="object" pos="0.2 0.25 1.0" size="0.05" type="sphere" rgba="1 0 0 1" />
+		<camera fovy="90" mode="fixed" name="camera1" pos="0.7 0.0 1.5" euler="0.2 1.2 1.57"/>
+	
+    </worldbody>
+</mujoco>
