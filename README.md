@@ -1,4 +1,4 @@
-# 2D Projection from 3D
+# 2D Projection from 3D in MuJoCo simulator
 
 ## The problem to implement a 2D mapping using the data from the MuJoCo simulator. 
 
