@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 # import gym
 # from gym.envs.robotics.rotations import mat2euler, mat2quat, quat2euler, euler2quat
 
-def global2label(obj_pos, cam_pos, cam_ori, fov=60):
+def global2label(obj_pos, cam_pos, cam_ori, output_size=[64, 64], fov=90, s=1):
     """
     :param obj_pos: 3D coordinates of the joint from MuJoCo in nparray [m]
     :param cam_pos: 3D coordinates of the camera from MuJoCo in nparray [m]
@@ -11,7 +11,8 @@ def global2label(obj_pos, cam_pos, cam_ori, fov=60):
     :param fov: field of view in integer [degree]
     :return: Heatmap of the object in the 2D pixel space.
     """
-    e = np.array([128,128,1])
+
+    e = np.array([output_size[0]/2, output_size[1]/2, 1])
     fov = np.array([fov])
 
     # Converting the MuJoCo coordinate into typical computer vision coordinate.
@@ -20,7 +21,7 @@ def global2label(obj_pos, cam_pos, cam_ori, fov=60):
     cam_pos_cv = np.array([cam_pos[1], cam_pos[0], -cam_pos[2]])
 
     obj_pos_in_2D, obj_pos_from_cam = get_2D_from_3D(obj_pos_cv, cam_pos_cv, cam_ori_cv, fov, e)
-    label = gkern(e[0]/2, e[1]/2, (obj_pos_in_2D[1]/4, (e[0]*2-obj_pos_in_2D[0])/4), s=1)
+    label = gkern(output_size[0], output_size[1], (obj_pos_in_2D[1], output_size[0]-obj_pos_in_2D[0]), sigma=s)
     return label
 
 def get_2D_from_3D(a, c, theta, fov, e):
@@ -64,13 +65,13 @@ def get_2D_from_3D(a, c, theta, fov, e):
 
     return (bx, by), d
 
-def gkern(h, w, center, s=4):
+def gkern(h, w, center, sigma=1):
     x = np.arange(0, w, 1, float)
     y = np.arange(0, h, 1, float)
     y = y[:, np.newaxis]
     x0 = center[0]
     y0 = center[1]
-    return np.exp(-1 * ((x - x0) ** 2 + (y - y0) ** 2) / s**2)
+    return np.exp(-1 * ((x - x0) ** 2 + (y - y0) ** 2) / sigma**2)
 
 if __name__ == "__main__":
     # Use self.sim.data.get_geom_xpos("object") to get the object pos (mujoco-py env)
@@ -80,10 +81,10 @@ if __name__ == "__main__":
     # Use gym.envs.robotics.rotations.mat2euler(env.sim.data.get_camera_xmat('camera1')) to get the camera orientation in euler form. (mujoco-py + gym)       
     cam_ori = np.array([0.2, 1.2, 1.57])
 
-
-
-    fov = 90
+    fov = 90 # Field of view of the camera
+    output_size = [64, 64] # Output size (Height and width) of the 2D projection label in pixel
+    s = 1 # std for heapmap signal
     
-    label = global2label(obj_pos, cam_pos, cam_ori, fov)
+    label = global2label(obj_pos, cam_pos, cam_ori, output_size, fov=fov, s=s)
     plt.imshow(label)
     plt.show()
